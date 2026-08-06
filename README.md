@@ -1,186 +1,36 @@
-# Task Manager
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Overview
+## Getting Started
 
-Task Manager is a full-stack web application designed to simplify task organization and productivity. The project is being developed using modern web technologies, following good software engineering practices and a scalable architecture.
-
-Its goal is to provide users with an intuitive interface to create, organize, edit, and track daily tasks efficiently.
-
----
-
-## Technologies
-
-### Frontend
-
-- React
-- Next.js
-- TypeScript
-- Tailwind CSS
-- HTML5
-
-### Backend
-
-- Node.js
-- TypeScript
-
-### Database
-
-- PostgreSQL
-
-### DevOps
-
-- Docker
-- Docker Compose
-
----
-
-## Planned Features
-
-- User authentication
-- Create tasks
-- Edit tasks
-- Delete tasks
-- Mark tasks as completed
-- Task filtering
-- Responsive interface
-- Persistent data storage
-- Secure API communication
-
----
-
-## Architecture
-
-The project follows a modern full-stack architecture:
-
-```text
-Frontend (Next.js + React)
-            │
-            ▼
- REST API (Node.js + TypeScript)
-            │
-            ▼
-     PostgreSQL Database
-```
-
-The application is designed to separate concerns between presentation, business logic, and data persistence, making future maintenance and scalability easier.
-
----
-
-## Project Structure
-
-```text
-task-manager-app/
-
-├── app/
-├── components/
-├── services/
-├── hooks/
-├── lib/
-├── public/
-├── styles/
-├── docker/
-├── prisma/
-└── ...
-```
-
-> The structure may evolve as new features are implemented.
-
----
-
-## Prerequisites
-
-Before running the project, make sure you have installed:
-
-- Node.js 20+
-- npm or yarn
-- Docker
-- Docker Compose
-- PostgreSQL (optional if using Docker)
-
----
-
-## Installation
-
-Clone the repository:
-
-```bash
-git clone https://github.com/daviffc/TaskManager.git
-```
-
-Navigate to the project folder:
-
-```bash
-cd TaskManager/task-manager-app
-```
-
-Install dependencies:
-
-```bash
-npm install
-```
-
----
-
-## Running the Project
-
-Start the development server:
+First, run the development server:
 
 ```bash
 npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-If using Docker:
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-```bash
-docker compose up --build
-```
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-The application will be available at:
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-```
-http://localhost:3000
-```
+## Learn More
 
----
+To learn more about Next.js, take a look at the following resources:
 
-## Concepts Applied
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-- TypeScript
-- React
-- Next.js
-- Component-Based Architecture
-- Responsive Design
-- REST API
-- PostgreSQL
-- Docker
-- Clean Code
-- Separation of Concerns
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
----
+## Deploy on Vercel
 
-## Future Improvements
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-- Task categories
-- Priority levels
-- Due dates
-- Dark mode
-- Search and filters
-- Notifications
-- Team collaboration
-- Unit and integration testing
-- CI/CD pipeline
-
----
-
-## Author
-
-Developed by **Davi Ferreira Coelho** as part of my learning journey in Full-Stack Development, focusing on modern web technologies, scalable architecture, and clean software design.
-
-GitHub:
-https://github.com/daviffc
-
----
-
-## License
-
-This project is open-source and intended for educational purposes. Feel free to study, modify, and improve it.
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
