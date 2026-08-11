@@ -10,28 +10,38 @@ export default function TaskList() {
 
   useEffect(() => {
     async function fetchTasks() {
-      const response = await fetch("/api/tasks");
-      const data: Task[] = await response.json();
-      setTasks(data.map((task) => ({ ...task, status: task.status.toLowerCase() as TaskStatus })));
-    }
+  const response = await fetch("/api/tasks");
+
+  if (!response.ok) {
+    setTasks([]);
+    return;
+  }
+
+  const data: Task[] = await response.json();
+  setTasks(data.map((task) => ({ ...task, status: task.status.toLowerCase() as TaskStatus })));
+}
     fetchTasks();
   }, []);
 
     async function handleAddTask() {
-      if (newTask.trim() === "") return;
+  if (newTask.trim() === "") return;
 
-      const response = await fetch("/api/tasks", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: newTask }),
-      }); 
+  const response = await fetch("/api/tasks", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title: newTask }),
+  });
 
-      const rawTask = await response.json();
-      const task: Task = { ...rawTask, status: rawTask.status.toLowerCase() as TaskStatus }; 
+  if (!response.ok) {
+    return;
+  }
 
-      setTasks([...tasks, task]);
-      setNewTask("");
-    }
+  const rawTask = await response.json();
+  const task: Task = { ...rawTask, status: rawTask.status.toLowerCase() as TaskStatus };
+
+  setTasks([...tasks, task]);
+  setNewTask("");
+}
 
  async function handleDeleteTask(id: string) {
   await fetch(`/api/tasks/${id}`, {
