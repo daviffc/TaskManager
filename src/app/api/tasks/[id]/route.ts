@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { updateTaskSchema } from "@/lib/validations";
 
 export async function PATCH(
   request: Request,
@@ -14,6 +15,14 @@ export async function PATCH(
 
   const { id } = await params;
   const body = await request.json();
+  const parsed = updateTaskSchema.safeParse(body);
+
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: parsed.error.issues[0].message },
+      { status: 400 }
+    );
+  }
 
   try {
     const task = await prisma.task.update({
@@ -22,7 +31,7 @@ export async function PATCH(
         userId: session.user.id,
       },
       data: {
-        status: body.status,
+        status: parsed.data.status,
       },
     });
 
