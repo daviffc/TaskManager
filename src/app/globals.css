@@ -1,26 +1,40 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #F6F5F8;
+  --surface: #FFFFFF;
+  --foreground: #1E1B2E;
+  --foreground-secondary: #6E6A86;
+  --border-default: #E4E1EC;
+
+  --accent-todo: #8B87A6;
+  --accent-doing: #D9A441;
+  --accent-done: #3E9C82;
+  --accent-interactive: #7C6FC4;
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-foreground-secondary: var(--foreground-secondary);
+  --color-border-default: var(--border-default);
+
+  --color-accent-todo: var(--accent-todo);
+  --color-accent-doing: var(--accent-doing);
+  --color-accent-done: var(--accent-done);
+  --color-accent-interactive: var(--accent-interactive);
+
+  --font-sans: var(--font-inter);
+  --font-heading: var(--font-space-grotesk);
+  --font-mono: var(--font-jetbrains-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* Dark mode (Dracula) planejado como feature futura pós-lançamento.
+   Não ativado ainda — ver seção de melhorias futuras do projeto. */
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
