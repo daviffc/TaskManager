@@ -8,6 +8,14 @@ type TaskColumnProps = {
   onMoveTask: (id: string, newStatus: TaskStatus) => void;
 };
 
+const accentMap: Record<TaskStatus, string> = {
+  todo: "bg-accent-todo",
+  doing: "bg-accent-doing",
+  done: "bg-accent-done",
+};
+
+const statusOrder: TaskStatus[] = ["todo", "doing", "done"];
+
 export default function TaskColumn({
   title,
   status,
@@ -16,44 +24,55 @@ export default function TaskColumn({
   onMoveTask,
 }: TaskColumnProps) {
   const columnTasks = tasks.filter((task) => task.status === status);
+  const count = String(columnTasks.length).padStart(2, "0");
 
   return (
-    <div className="w-full max-w-xs rounded bg-zinc-100 p-4">
-      <h2 className="mb-3 font-semibold text-zinc-700">
-        {title} ({columnTasks.length})
-      </h2>
+    <div className="w-full max-w-xs rounded-xl bg-surface border border-border-default overflow-hidden">
+      {/* barra de assinatura */}
+      <div className={`h-1 w-full ${accentMap[status]}`} />
 
-      <ul className="flex flex-col gap-2">
-        {columnTasks.map((task) => (
-          <li
-            key={task.id}
-            className="rounded border border-zinc-200 bg-white p-3"
-          >
-            <p className="text-zinc-800">{task.title}</p>
+      <div className="p-4">
+        <h2 className="mb-4 flex items-center justify-between font-heading font-semibold text-foreground">
+          <span>{title}</span>
+          <span className="font-mono text-xs text-foreground-secondary tracking-wide">
+            {title.toUpperCase()} · {count}
+          </span>
+        </h2>
 
-            <div className="mt-2 flex items-center justify-between text-sm">
-              <select
-                value={task.status}
-                onChange={(e) =>
-                  onMoveTask(task.id, e.target.value as TaskStatus)
-                }
-                className="rounded border border-zinc-300 text-zinc-700"
-              >
-                <option value="todo">A Fazer</option>
-                <option value="doing">Fazendo</option>
-                <option value="done">Feito</option>
-              </select>
+        <ul className="flex flex-col gap-2">
+          {columnTasks.map((task) => (
+            <li
+              key={task.id}
+              className="rounded-lg border border-border-default bg-background p-3"
+            >
+              <p className="text-foreground text-sm">{task.title}</p>
 
-              <button
-                onClick={() => onDeleteTask(task.id)}
-                className="text-red-500 hover:text-red-700"
-              >
-                Excluir
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
+              <div className="mt-3 flex items-center justify-between text-xs">
+                <div className="flex gap-1">
+                  {statusOrder
+                    .filter((s) => s !== task.status)
+                    .map((s) => (
+                      <button
+                        key={s}
+                        onClick={() => onMoveTask(task.id, s)}
+                        className="rounded-full border border-border-default px-2 py-1 font-mono text-foreground-secondary hover:border-accent-interactive hover:text-accent-interactive transition-colors"
+                      >
+                        {s}
+                      </button>
+                    ))}
+                </div>
+
+                <button
+                  onClick={() => onDeleteTask(task.id)}
+                  className="text-foreground-secondary hover:text-red-500 transition-colors"
+                >
+                  excluir
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }

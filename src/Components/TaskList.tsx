@@ -10,72 +10,83 @@ export default function TaskList() {
 
   useEffect(() => {
     async function fetchTasks() {
-  const response = await fetch("/api/tasks");
+      const response = await fetch("/api/tasks");
 
-  if (!response.ok) {
-    setTasks([]);
-    return;
-  }
+      if (!response.ok) {
+        setTasks([]);
+        return;
+      }
 
-  const data: Task[] = await response.json();
-  setTasks(data.map((task) => ({ ...task, status: task.status.toLowerCase() as TaskStatus })));
-}
+      const data: Task[] = await response.json();
+      setTasks(
+        data.map((task) => ({
+          ...task,
+          status: task.status.toLowerCase() as TaskStatus,
+        }))
+      );
+    }
     fetchTasks();
   }, []);
 
-    async function handleAddTask() {
-  if (newTask.trim() === "") return;
+  async function handleAddTask() {
+    if (newTask.trim() === "") return;
 
-  const response = await fetch("/api/tasks", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title: newTask }),
-  });
+    const response = await fetch("/api/tasks", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title: newTask }),
+    });
 
-  if (!response.ok) {
-    return;
+    if (!response.ok) {
+      return;
+    }
+
+    const rawTask = await response.json();
+    const task: Task = {
+      ...rawTask,
+      status: rawTask.status.toLowerCase() as TaskStatus,
+    };
+
+    setTasks([...tasks, task]);
+    setNewTask("");
   }
 
-  const rawTask = await response.json();
-  const task: Task = { ...rawTask, status: rawTask.status.toLowerCase() as TaskStatus };
+  async function handleDeleteTask(id: string) {
+    await fetch(`/api/tasks/${id}`, {
+      method: "DELETE",
+    });
 
-  setTasks([...tasks, task]);
-  setNewTask("");
-}
+    setTasks(tasks.filter((task) => task.id !== id));
+  }
 
- async function handleDeleteTask(id: string) {
-  await fetch(`/api/tasks/${id}`, {
-    method: "DELETE",
-  });
-
-  setTasks(tasks.filter((task) => task.id !== id));
-}
   async function handleMoveTask(id: string, newStatus: TaskStatus) {
-  await fetch(`/api/tasks/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ status: newStatus.toUpperCase() }),
-  });
+    await fetch(`/api/tasks/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: newStatus.toUpperCase() }),
+    });
 
-  setTasks(
-    tasks.map((task) =>
-      task.id === id ? { ...task, status: newStatus } : task
-    )
-  );
-}
+    setTasks(
+      tasks.map((task) =>
+        task.id === id ? { ...task, status: newStatus } : task
+      )
+    );
+  }
+
   return (
-    <div className="w-full max-w-4xl">
-      <div className="mb-6 flex gap-2">
+    <div className="w-full max-w-6xl">
+      <div className="mb-8 flex gap-2">
         <input
           type="text"
           value={newTask}
           onChange={(e) => setNewTask(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleAddTask()}
           placeholder="Nova tarefa..."
-          className="flex-1 rounded border border-zinc-300 px-3 py-2 text-zinc-900"
+          className="flex-1 rounded-lg border border-border-default bg-surface px-3 py-2 text-foreground placeholder:text-foreground-secondary focus:outline-none focus:ring-2 focus:ring-accent-interactive/40"
         />
         <button
           onClick={handleAddTask}
-          className="rounded bg-zinc-900 px-4 py-2 text-white hover:bg-zinc-700"
+          className="rounded-lg bg-accent-interactive px-4 py-2 text-white font-medium hover:opacity-90 transition-opacity"
         >
           Adicionar
         </button>
