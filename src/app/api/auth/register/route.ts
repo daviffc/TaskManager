@@ -2,8 +2,19 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcrypt"
 import { prisma } from "@/lib/prisma";
 import { registerSchema } from "@/lib/validations";
+import { rateLimit } from "@/lib/rateLimit";
 
 export async function POST (request: Request){
+    const ip = request.headers.get("x-forwarded-for") ?? "unknown";
+    const { success } = rateLimit(ip, 5, 60_000);
+
+    if (!success) {
+        return NextResponse.json(
+            { error: "Too many requests. Please try again later." },
+            { status: 429 }
+        );
+    }
+
     const body = await request.json();
 
     const parsed = registerSchema.safeParse(body);
