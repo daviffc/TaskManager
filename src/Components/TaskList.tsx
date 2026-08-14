@@ -1,12 +1,31 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Task, TaskStatus } from "@/types/task";
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverlay,
+  DragStartEvent,
+  PointerSensor,
+  KeyboardSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import { Task, TaskStatus, TaskColor } from "@/types/task";
 import TaskColumn from "./TaskColumn";
+import TaskCard from "./TaskCard";
 
 export default function TaskList() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTask, setNewTask] = useState("");
+  const [activeTask, setActiveTask] = useState<Task | null>(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 6 },
+    }),
+    useSensor(KeyboardSensor)
+  );
 
   useEffect(() => {
     async function fetchTasks() {
@@ -59,19 +78,58 @@ export default function TaskList() {
     setTasks(tasks.filter((task) => task.id !== id));
   }
 
-  async function handleMoveTask(id: string, newStatus: TaskStatus) {
-    await fetch(`/api/tasks/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: newStatus.toUpperCase() }),
-    });
+ function handleMoveTask(id: string, newStatus: TaskStatus) {
+  const previousTasks = tasks;
 
-    setTasks(
-      tasks.map((task) =>
-        task.id === id ? { ...task, status: newStatus } : task
-      )
-    );
+  setTasks(
+    tasks.map((task) =>
+      task.id === id ? { ...task, status: newStatus } : task
+    )
+  );
+
+  fetch(`/api/tasks/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status: newStatus.toUpperCase() }),
+  }).catch(() => {
+    setTasks(previousTasks);
+  });
+}
+  function handleDragStart(event: DragStartEvent) {
+    const task = tasks.find((t) => t.id === event.active.id);
+    setActiveTask(task ?? null);
   }
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    setActiveTask(null);
+
+    if (!over) return;
+
+    const taskId = active.id as string;
+    const newStatus = over.id as TaskStatus;
+    const task = tasks.find((t) => t.id === taskId);
+
+    if (!task || task.status === newStatus) return;
+
+    handleMoveTask(taskId, newStatus);
+  }
+
+  function handleChangeColor(id: string, color: TaskColor | null) {
+  const previousTasks = tasks;
+
+  setTasks((prev) =>
+    prev.map((task) => (task.id === id ? { ...task, color } : task))
+  );
+
+  fetch(`/api/tasks/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ color: color ? color.toUpperCase() : null }),
+  }).catch(() => {
+    setTasks(previousTasks);
+  });
+}
 
   return (
     <div className="w-full max-w-6xl">
@@ -92,29 +150,43 @@ export default function TaskList() {
         </button>
       </div>
 
-      <div className="flex flex-col gap-4 sm:flex-row">
-        <TaskColumn
-          title="A Fazer"
-          status="todo"
-          tasks={tasks}
-          onDeleteTask={handleDeleteTask}
-          onMoveTask={handleMoveTask}
-        />
-        <TaskColumn
-          title="Fazendo"
-          status="doing"
-          tasks={tasks}
-          onDeleteTask={handleDeleteTask}
-          onMoveTask={handleMoveTask}
-        />
-        <TaskColumn
-          title="Feito"
-          status="done"
-          tasks={tasks}
-          onDeleteTask={handleDeleteTask}
-          onMoveTask={handleMoveTask}
-        />
-      </div>
+      <DndContext
+        sensors={sensors}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+      >
+        <div className="flex flex-col gap-4 sm:flex-row">
+          <TaskColumn
+            title="A Fazer"
+            status="todo"
+            tasks={tasks}
+            onDeleteTask={handleDeleteTask}
+            onChangeColor={handleChangeColor}
+          />
+          <TaskColumn
+            title="Fazendo"
+            status="doing"
+            tasks={tasks}
+            onDeleteTask={handleDeleteTask}
+            onChangeColor={handleChangeColor}
+          />
+          <TaskColumn
+            title="Feito"
+            status="done"
+            tasks={tasks}
+            onDeleteTask={handleDeleteTask}
+            onChangeColor={handleChangeColor}
+          />
+        </div>
+
+        <DragOverlay>
+          {activeTask ? (
+            <div className="rounded-lg border border-accent-interactive bg-background p-3 shadow-lg rotate-2">
+              <p className="text-foreground text-sm">{activeTask.title}</p>
+            </div>
+          ) : null}
+        </DragOverlay>
+      </DndContext>
     </div>
   );
 }

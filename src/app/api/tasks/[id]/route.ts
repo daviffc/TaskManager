@@ -32,6 +32,7 @@ export async function PATCH(
       },
       data: {
         status: parsed.data.status,
+        color: parsed.data.color,
       },
     });
 

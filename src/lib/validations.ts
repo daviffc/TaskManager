@@ -17,4 +17,5 @@ export const createTaskSchema = z.object({
 
 export const updateTaskSchema = z.object({
   status: z.enum(["TODO", "DOING", "DONE"]),
+  color: z.enum(["RED", "ORANGE", "YELLOW", "GREEN", "BLUE", "PURPLE"]).nullable().optional(),
 });
