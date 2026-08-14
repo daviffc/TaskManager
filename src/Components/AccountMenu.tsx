@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { signOut } from "next-auth/react";
+import { useTheme } from "@/lib/useTheme";
 
 type AccountMenuProps = {
   name: string;
@@ -10,6 +11,7 @@ type AccountMenuProps = {
 export default function AccountMenu({ name }: AccountMenuProps) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -42,9 +44,20 @@ export default function AccountMenu({ name }: AccountMenuProps) {
             <p className="text-sm font-medium text-foreground">{name}</p>
             <p className="text-xs text-foreground-secondary">Conta local</p>
           </div>
+
+          <button
+            onClick={toggleTheme}
+            className="w-full text-left px-4 py-2 text-sm text-foreground-secondary hover:bg-background hover:text-foreground transition-colors flex items-center justify-between"
+          >
+            <span>Tema</span>
+            <span className="font-mono text-xs">
+              {theme === "dark" ? "Escuro" : "Claro"}
+            </span>
+          </button>
+
           <button
             onClick={() => signOut({ callbackUrl: "/login" })}
-            className="w-full text-left px-4 py-2 text-sm text-foreground-secondary hover:bg-background hover:text-red-500 transition-colors"
+            className="w-full text-left px-4 py-2 text-sm text-foreground-secondary hover:bg-background hover:text-red-500 transition-colors border-t border-border-default"
           >
             Sair
           </button>
