@@ -40,12 +40,9 @@
   --color-accent-interactive: var(--accent-interactive);
 
   --font-sans: var(--font-inter);
-  --font-heading: var(--font-space-grotesk);
+  --font-heading: var(--font-inter);
   --font-mono: var(--font-jetbrains-mono);
 }
-
-/* Dark mode (Dracula) planejado como feature futura pós-lançamento.
-   Não ativado ainda — ver seção de melhorias futuras do projeto. */
 
 body {
   background: var(--background);

@@ -39,7 +39,7 @@ export default function TaskColumn({
       <div className="p-4">
         <h2 className="mb-4 flex items-center justify-between font-heading font-semibold text-foreground">
           <span>{title}</span>
-          <span className="font-mono text-xs text-foreground-secondary tracking-wide">
+          <span className="font-mono text-xs text-foreground-secondary/60 tracking-wide">
             {title.toUpperCase()} · {count}
           </span>
         </h2>

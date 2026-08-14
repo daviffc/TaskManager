@@ -59,7 +59,7 @@ export default function TaskCard({ task, onDeleteTask, onChangeColor }: TaskCard
         !borderColor ? "border-l-border-default" : ""
       } ${isDragging ? "opacity-40" : ""}`}
     >
-      <p className="text-foreground text-sm">{task.title}</p>
+      <p className="text-foreground text-sm font-medium">{task.title}</p>
 
       <div className="mt-3 flex justify-between text-xs">
         <div className="relative" ref ={pickerRef}>
