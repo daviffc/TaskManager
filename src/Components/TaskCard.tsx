@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useDraggable } from "@dnd-kit/core";
 import { Task, TaskColor } from "@/types/task";
+import { Trash2 } from "lucide-react";
 
 type TaskCardProps = {
   task: Task;
@@ -102,7 +103,7 @@ export default function TaskCard({ task, onDeleteTask, onChangeColor }: TaskCard
           onClick={() => onDeleteTask(task.id)}
           className="text-foreground-secondary hover:text-red-500 transition-colors"
         >
-          excluir
+          <Trash2 size={16} />
         </button>
       </div>
     </li>
