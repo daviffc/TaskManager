@@ -56,7 +56,7 @@ export default function TaskCard({ task, onDeleteTask, onChangeColor }: TaskCard
     }}
       {...listeners}
       {...attributes}
-       className={`relative rounded-lg border border-border-default bg-background p-3 cursor-grab active:cursor-grabbing touch-none border-l-4 ${
+       className={`relative rounded-lg border border-border-default bg-background p-3 cursor-grab active:cursor-grabbing touch-none border-l-4 transition-all hover:shadow-md hover:-translate-y-0.5${
         !borderColor ? "border-l-border-default" : ""
       } ${isDragging ? "opacity-40" : ""}`}
     >

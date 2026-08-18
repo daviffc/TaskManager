@@ -140,7 +140,7 @@ export default function TaskList() {
           onChange={(e) => setNewTask(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleAddTask()}
           placeholder="Nova tarefa..."
-          className="flex-1 rounded-lg border border-border-default bg-surface px-3 py-2 text-foreground placeholder:text-foreground-secondary focus:outline-none focus:ring-2 focus:ring-accent-interactive/40"
+          className="flex-1 rounded-lg border border-border-default bg-surface px-3 py-2 text-foreground placeholder:text-foreground-secondary/90 focus:outline-none focus:ring-2 focus:ring-accent-interactive/40"
         />
         <button
           onClick={handleAddTask}

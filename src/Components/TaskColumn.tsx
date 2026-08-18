@@ -44,7 +44,13 @@ export default function TaskColumn({
           </span>
         </h2>
 
-        <ul className="flex flex-col gap-2 min-h-[40px]">
+        <ul className="flex flex-col gap-2 min-h-[80px]">
+          {columnTasks.length === 0 && (
+            <li className="flex items-center rounded-lg border border-dashed border-border-default py-6 text-xs text-foreground-secondary/60">
+              Arraste tarefas pra cá
+            </li>
+          )}
+          
           {columnTasks.map((task) => (
             <TaskCard 
             key={task.id} 
