@@ -6,9 +6,10 @@ import { useTheme } from "@/lib/useTheme";
 
 type AccountMenuProps = {
   name: string;
+  provider: string;
 };
 
-export default function AccountMenu({ name }: AccountMenuProps) {
+export default function AccountMenu({ name, provider }: AccountMenuProps) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const { theme, toggleTheme } = useTheme();
@@ -26,6 +27,7 @@ export default function AccountMenu({ name }: AccountMenuProps) {
 
   const initial = name?.charAt(0).toUpperCase() ?? "?";
 
+  
   return (
     <div className="relative" ref={menuRef}>
       <button
@@ -42,7 +44,9 @@ export default function AccountMenu({ name }: AccountMenuProps) {
         <div className="absolute right-0 mt-2 w-48 rounded-lg border border-border-default bg-surface shadow-lg overflow-hidden z-10">
           <div className="px-4 py-3 border-b border-border-default">
             <p className="text-sm font-medium text-foreground">{name}</p>
-            <p className="text-xs text-foreground-secondary">Conta local</p>
+            <p className="text-xs text-foreground-secondary">
+                {provider === "Google" ? "Conectado via Google" : "Conta local"}
+                </p>
           </div>
 
           <button

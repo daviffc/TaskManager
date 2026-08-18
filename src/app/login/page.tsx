@@ -57,6 +57,11 @@ export default function LoginPage() {
                      >
                         Sign in
                      </button>
+                     <button 
+                     onClick={() => signIn("google", { callbackUrl: "/" })}
+                     className = "rounded border border-gray-200 bg-transparent px-3 py-2 text-blue-400 transition-all duration-300 hover:bg-gray-200 hover:text-darkblue-800">
+                        Entrar com Google
+                     </button>
                  </form>
              </div>
     );

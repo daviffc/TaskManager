@@ -3,10 +3,16 @@ import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
 import { prisma } from "@/lib/prisma";
 import { authConfig } from "@/lib/auth.config";
+import Google from "next-auth/providers/google";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
   providers: [
+    Google({
+        clientId: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
+    
     Credentials({
       credentials: {
         email: {},
@@ -38,16 +44,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     strategy: "jwt",
   },
   callbacks: {
-    ...authConfig.callbacks,
-    jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-      }
-      return token;
+    async jwt({ token, user, account }) {
+      if (user) token.id = user.id;
+      if (account) token.provider = account.provider;
+      return token
     },
-    session({ session, token }) {
+    async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
+        session.user.provider = token.provider as string;
       }
       return session;
     },
