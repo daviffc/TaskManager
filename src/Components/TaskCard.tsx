@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useDraggable } from "@dnd-kit/core";
 import { Task, TaskColor } from "@/types/task";
-import { Trash2 } from "lucide-react";
+import { GripVertical, Trash2 } from "lucide-react";
 
 type TaskCardProps = {
   task: Task;
@@ -56,10 +56,14 @@ export default function TaskCard({ task, onDeleteTask, onChangeColor }: TaskCard
     }}
       {...listeners}
       {...attributes}
-       className={`relative rounded-lg border border-border-default bg-background p-3 cursor-grab active:cursor-grabbing touch-none border-l-4 transition-all hover:shadow-md hover:-translate-y-0.5${
+       className={`relative group rounded-lg border border-border-default bg-background p-3 cursor-grab active:cursor-grabbing touch-none border-l-4 transition-all hover:shadow-md hover:-translate-y-0.5 ${
         !borderColor ? "border-l-border-default" : ""
-      } ${isDragging ? "opacity-40" : ""}`}
+        } ${isDragging ? "opacity-40" : ""}`}
     >
+        <GripVertical
+        size={14}
+        className="absolute right-2 top-2 text-foreground-secondary/40 group-hover:text-foreground-secondary/70 transition-colors"
+    />
       <p className="text-foreground text-sm font-medium">{task.title}</p>
 
       <div className="mt-3 flex justify-between text-xs">

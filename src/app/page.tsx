@@ -7,20 +7,20 @@ export default async function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center gap-8 bg-background p-8">
-      <div className="flex w-full max-w-6xl items-center justify-end">
-        <AccountMenu 
-        name={session?.user?.name ?? "Usuário"}
-        provider ={session?.user?.provider ?? "credentials"} />
-      </div>
-
-      <div className="text-center">
-        <h1 className="text-5xl font-heading font-bold text-foreground">
-          Task Manager
-        </h1>
-        <p className="mt-4 text-lg text-foreground-secondary">
-          Organize suas tarefas em quadros, do seu jeito.
-        </p>
-      </div>
+      <header className="flex w-full max-w-6xl items-center justify-between border-b border-border-default pb-4">
+  <div>
+    <h1 className="text-2xl font-heading font-semibold text-foreground">
+      Task Manager
+    </h1>
+    <p className="text-sm text-foreground-secondary">
+      Organize suas tarefas em quadros, do seu jeito.
+    </p>
+  </div>
+  <AccountMenu
+    name={session?.user?.name ?? "Usuário"}
+    provider={session?.user?.provider ?? "credentials"}
+  />
+</header>
 
       <TaskList />
     </main>
