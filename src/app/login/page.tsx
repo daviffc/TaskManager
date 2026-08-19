@@ -1,14 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { Sun, Moon } from "lucide-react"
+import { useTheme } from "@/lib/useTheme";
 
 export default function LoginPage() {
+    const { theme, toggleTheme } = useTheme();
+    const [mounted, setMounted] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const router = useRouter();
+
+    useEffect(() => {
+        setMounted(true);
+    },[]);
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
@@ -28,42 +36,57 @@ export default function LoginPage() {
         router.push("/");
     }
     return (
-        <div className = "flex min-h-screen items-center justify-center ">
+        <div className = "relative flex min-h-screen items-center justify-center bg-background">
+            <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label="Alternar tema"
+            className="absolute right-6 top-6 flex h-9 w-9 items-center justify-center rounded-full border border-border-default bg-surface text-foreground-secondary transition-colors hover:text-foreground"
+            >
+               {mounted ? (
+                    theme === "dark" ? <Sun size={16} /> : <Moon size={16} />
+                ) : (
+                    <span className="block h-4 w-4" />
+                )}
+            </button>
+
+    
             <form
             onSubmit={handleSubmit}
-            className = "flex w-full max-w-sm flex-col gap-4 rounded border border-zinc-300 p-6 "
+            className="flex w-full max-w-sm flex-col gap-4 rounded-2xl border border-border-default bg-surface p-8 shadow-xl shadow-black/5"
+        >
+            <h1 className="text-2xl font-bold text-foreground">Login</h1>
+
+            {error && <p className="text-red-500">{error}</p>}
+
+            <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email"
+            className="rounded-lg border border-border-default bg-background px-3 py-2.5 text-foreground placeholder:text-foreground-secondary/70 outline-none transition-colors focus:border-accent-interactive focus:ring-2 focus:ring-accent-interactive/20"
+            />
+            <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Password"
+            className="rounded-lg border border-border-default bg-background px-3 py-2.5 text-foreground placeholder:text-foreground-secondary/70 outline-none transition-colors focus:border-accent-interactive focus:ring-2 focus:ring-accent-interactive/20"
+            />
+            <button
+            type="submit"
+            className="rounded-lg bg-accent-interactive px-3 py-2.5 text-white hover:opacity-90 transition-opacity"
             >
-                <h1 className = "text-2xl font-bold">Login</h1>
-
-                {error && <p className = "text-red-600">{error}</p>}
-
-                <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Email"
-                    className = "rounded border border-zinc-300 px-3 py-2 text-zinc-900"
-                    />
-                <input
-                    type = "password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Password"
-                     className="rounded border border-zinc-300 px-3 py-2 text-zinc-900"
-                     />
-                     <button
-                     type="submit"
-                     className = "rounded bg-blue-500 px-3 py-2 text-white hover:bg-blue-600"
-                     >
-                        Sign in
-                     </button>
-                     <button 
-                     onClick={() => signIn("google", { callbackUrl: "/" })}
-                     className = "rounded border border-gray-200 bg-transparent px-3 py-2 text-blue-400 transition-all duration-300 hover:bg-gray-200 hover:text-darkblue-800">
-                        Entrar com Google
-                     </button>
-                 </form>
-             </div>
-    );
-        
-}
+            Sign in
+            </button>
+            <button
+            onClick={() => signIn("google", { callbackUrl: "/" })}
+            className="rounded-lg border border-border-default bg-transparent px-3 py-2.5 text-foreground transition-colors hover:bg-background"
+            >
+            Entrar com Google
+            </button>
+        </form>
+        </div>
+            );
+                
+        }
