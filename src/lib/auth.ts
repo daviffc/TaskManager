@@ -11,6 +11,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     Google({
         clientId: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        authorization:{
+            params: {
+            scope:"openid email profile https://www.googleapis.com/auth/calendar",
+            access_type:"offline",
+            prompt:"consent",
+            },
+        },
     }),
     
     Credentials({
@@ -45,17 +52,32 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     strategy: "jwt",
   },
   callbacks: {
-    async jwt({ token, user, account }) {
-      if (user) token.id = user.id;
-      if (account) token.provider = account.provider;
-      return token
-    },
-    async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id as string;
-        session.user.provider = token.provider as string;
+  async jwt({ token, user, account }) {
+    if (user) token.id = user.id;
+    if (account) {
+      token.provider = account.provider;
+
+      if (account.provider === "google" && account.access_token) {
+        await prisma.user.update({
+          where: { id: user!.id },
+          data: {
+            accessToken: account.access_token,
+            refreshToken: account.refresh_token ?? null,
+            tokenExpiry: account.expires_at
+              ? new Date(account.expires_at * 1000)
+              : null,
+          },
+        });
       }
-      return session;
-    },
+    }
+    return token;
   },
+  async session({ session, token }) {
+    if (session.user) {
+      session.user.id = token.id as string;
+      session.user.provider = token.provider as string;
+    }
+    return session;
+  },
+},
 });
