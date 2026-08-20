@@ -9,17 +9,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
   providers: [
     Google({
-        clientId: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        authorization:{
-            params: {
-            scope:"openid email profile https://www.googleapis.com/auth/calendar",
-            access_type:"offline",
-            prompt:"consent",
-            },
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      authorization: {
+        params: {
+          scope: "openid email profile https://www.googleapis.com/auth/calendar",
+          access_type: "offline",
+          prompt: "consent",
         },
+      },
     }),
-    
+
     Credentials({
       credentials: {
         email: {},
@@ -52,32 +52,59 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     strategy: "jwt",
   },
   callbacks: {
-  async jwt({ token, user, account }) {
-    if (user) token.id = user.id;
-    if (account) {
-      token.provider = account.provider;
+    async jwt({ token, user, account }) {
+      if (user) token.id = user.id;
 
-      if (account.provider === "google" && account.access_token) {
-        await prisma.user.update({
-          where: { id: user!.id },
-          data: {
-            accessToken: account.access_token,
-            refreshToken: account.refresh_token ?? null,
-            tokenExpiry: account.expires_at
-              ? new Date(account.expires_at * 1000)
-              : null,
-          },
-        });
+      if (account && account.provider === "google") {
+        token.provider = account.provider;
+
+        try {
+          let dbUser = await prisma.user.findUnique({
+            where: { email: token.email! },
+          });
+
+          if (!dbUser) {
+            dbUser = await prisma.user.create({
+              data: {
+                email: token.email!,
+                name: token.name ?? "Usuário",
+                password: null,
+              },
+            });
+          }
+
+          token.id = dbUser.id;
+
+          if (account.access_token) {
+            await prisma.user.update({
+              where: { id: dbUser.id },
+              data: {
+                accessToken: account.access_token,
+                refreshToken: account.refresh_token ?? null,
+                tokenExpiry: account.expires_at
+                  ? new Date(account.expires_at * 1000)
+                  : null,
+              },
+            });
+          }
+        } catch (e) {
+          console.error("JWT callback error:", e);
+        }
       }
-    }
-    return token;
+
+      if (account && account.provider === "credentials") {
+        token.provider = account.provider;
+      }
+
+      return token;
+    },
+
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id as string;
+        session.user.provider = token.provider as string;
+      }
+      return session;
+    },
   },
-  async session({ session, token }) {
-    if (session.user) {
-      session.user.id = token.id as string;
-      session.user.provider = token.provider as string;
-    }
-    return session;
-  },
-},
 });

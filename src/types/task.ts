@@ -8,3 +8,18 @@ export type Task = {
   status: TaskStatus;
   color: TaskColor | null;
 };
+
+export type CalendarEvent = {
+  id:string;
+  summary:string;
+  start: {
+    dateTime?:string;
+    date?:string;
+    timeZone?:string;
+  };
+  end: {
+    dateTime?: string;
+    date?: string;
+  };
+  htmlLink: string;
+};
