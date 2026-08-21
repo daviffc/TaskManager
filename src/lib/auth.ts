@@ -4,6 +4,8 @@ import bcrypt from "bcrypt";
 import { prisma } from "@/lib/prisma";
 import { authConfig } from "@/lib/auth.config";
 import Google from "next-auth/providers/google";
+import { encrypt } from "@/lib/crypto";
+import { rateLimit } from "@/lib/rateLimit";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
@@ -28,6 +30,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       authorize: async (credentials) => {
         const email = credentials.email as string;
         const password = credentials.password as string;
+
+        const { success } = rateLimit(email,5,120_000) 
+        if (!success) return null;
 
         const user = await prisma.user.findUnique({
           where: { email },
@@ -79,8 +84,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             await prisma.user.update({
               where: { id: dbUser.id },
               data: {
-                accessToken: account.access_token,
-                refreshToken: account.refresh_token ?? null,
+                accessToken: encrypt(account.access_token),
+                refreshToken: account.refresh_token ? encrypt(account.access_token): null,
                 tokenExpiry: account.expires_at
                   ? new Date(account.expires_at * 1000)
                   : null,

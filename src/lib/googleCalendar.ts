@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma"
+import { decrypt, encrypt } from "@/lib/crypto"
 
 export async function getValidAccessToken(userId: string): Promise<string | null> {
   const user = await prisma.user.findUnique({ where: { id: userId } });
@@ -7,7 +8,7 @@ export async function getValidAccessToken(userId: string): Promise<string | null
 
   const isExpired = user.tokenExpiry ? new Date() > user.tokenExpiry : false;
 
-  if (!isExpired) return user.accessToken;
+  if (!isExpired) return decrypt(user.accessToken);
 
   const response = await fetch("https://oauth2.googleapis.com/token", {
     method: "POST",
@@ -15,19 +16,25 @@ export async function getValidAccessToken(userId: string): Promise<string | null
     body: new URLSearchParams({
       client_id: process.env.GOOGLE_CLIENT_ID!,
       client_secret: process.env.GOOGLE_CLIENT_SECRET!,
-      refresh_token: user.refreshToken,
+      refresh_token: decrypt(user.refreshToken),
       grant_type: "refresh_token",
     }),
   });
 
   const data = await response.json();
 
-  if (!data.access_token) return null;
+  if (!data.access_token) {
+    await prisma.user.update({
+      where: { id: userId},
+      data: { accessToken: null, refreshToken: null, tokenExpiry: null},
+    });
+    return null;
+  };
 
   await prisma.user.update({
     where: { id: userId },
     data: {
-      accessToken: data.access_token,
+      accessToken: encrypt(data.access_token),
       tokenExpiry: new Date(Date.now() + data.expires_in * 1000),
     },
   });
