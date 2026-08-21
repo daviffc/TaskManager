@@ -2,7 +2,13 @@ import crypto from "crypto";
 
 const ALGORITHM = "aes-256-gcm";
 
-const KEY = Buffer.from(process.env.ENCRYPTION_KEY!, "hex");
+const KEY = Buffer.from(process.env.ENCRYPTION_KEY ?? "", "hex");
+
+if (KEY.length !== 32){
+    throw new Error(
+        "ENCRYPTION_KEY inválida: defina uma chave hexadecimal de 32 bytes (64 caracteres hex) na variável de ambiente ENCRYPTION_KEY."
+    );
+}
 
 export function encrypt(text: string): string {
   const iv = crypto.randomBytes(12);
