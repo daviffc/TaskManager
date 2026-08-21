@@ -1,7 +1,20 @@
 const requests = new Map<string, { count: number; resetAt: number }>();
 
+const CLEANUP_INTERVAL_MS = 5 * 60_000;
+let lastCleanup = Date.now();
+
+function cleanupExpired(now: number) {
+    if (now - lastCleanup < CLEANUP_INTERVAL_MS) return;
+    lastCleanup = now;
+    for (const [key, entry] of requests) {
+        if (now > entry.resetAt) requests.delete(key);
+    }
+}
+
 export function rateLimit(identifier: string, limit: number, windowMs: number)  {
     const now = Date.now();
+    cleanupExpired(now);
+
     const entry = requests.get(identifier);
 
     if (!entry || now > entry.resetAt) {
@@ -15,5 +28,4 @@ export function rateLimit(identifier: string, limit: number, windowMs: number)  
 
     entry.count++;
     return { success: true };
-
 }
