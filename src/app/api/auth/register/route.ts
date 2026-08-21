@@ -4,8 +4,14 @@ import { prisma } from "@/lib/prisma";
 import { registerSchema } from "@/lib/validations";
 import { rateLimit } from "@/lib/rateLimit";
 
+function getClientIp(request: Request): string {
+    const forwardedFor = request.headers.get("x-forwarded-for");
+    if (forwardedFor) return forwardedFor.split(",")[0].trim();
+    return request.headers.get("x-real-ip") ?? "unknown";
+}
+
 export async function POST (request: Request){
-    const ip = request.headers.get("x-forwarded-for") ?? "unknown";
+    const ip = getClientIp(request);
     const { success } = rateLimit(ip, 5, 60_000);
 
     if (!success) {
