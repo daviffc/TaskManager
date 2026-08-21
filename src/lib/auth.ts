@@ -7,6 +7,8 @@ import Google from "next-auth/providers/google";
 import { encrypt } from "@/lib/crypto";
 import { rateLimit } from "@/lib/rateLimit";
 
+const DUMMY_HASH =  "$2b$10$CwTycUXWue0Thq9StjUM0uJ8g8t2X1LrJHqDoK/lnQGGjKrOB9zNa";
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
   providers: [
@@ -38,12 +40,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           where: { email },
         });
 
-        if (!user) return null;
-        if (!user.password) return null;
+        const hashToCompare = user?.password ?? DUMMY_HASH;
+        const passwordMatches = await bcrypt.compare(password, hashToCompare);
 
-        const passwordMatches = await bcrypt.compare(password, user.password);
-
-        if (!passwordMatches) return null;
+        if (!user || !user.password || !passwordMatches) return null;
 
         return {
           id: user.id,
