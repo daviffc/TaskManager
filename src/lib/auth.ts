@@ -85,7 +85,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               where: { id: dbUser.id },
               data: {
                 accessToken: encrypt(account.access_token),
-                refreshToken: account.refresh_token ? encrypt(account.access_token): null,
+               refreshToken: account.refresh_token ? encrypt(account.refresh_token) : null,
                 tokenExpiry: account.expires_at
                   ? new Date(account.expires_at * 1000)
                   : null,
